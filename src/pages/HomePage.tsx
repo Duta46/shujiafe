@@ -106,7 +106,7 @@ const BASE_URL = import.meta.env.VITE_REACT_API_STORAGE_URL;
       >
         <div className="pb-[30px]">
           <Swiper
-            className="swiper-wrapper "
+            className="swiper-wrapper"
             direction="horizontal"
             spaceBetween={20}
             slidesPerView="auto"

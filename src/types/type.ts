@@ -22,6 +22,7 @@ interface Testimonial {
     id: number,
     name: string,
     photo: string,
+    message: string,
 }
 
 export interface Category {

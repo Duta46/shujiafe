@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { HomeService } from "../types/type";
+import { HomeService, CartItem } from "../types/type";
 import apiClient from "../services/apiServices";
 import { Swiper, SwiperSlide } from "swiper/react";
+import { Link } from "react-router-dom";
 
 export default function DetailsPage() {
   const { slug } = useParams<{ slug: string }>();
@@ -11,12 +12,28 @@ export default function DetailsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const [cart, setCart] = useState<CartItem[]>([]);
+  const [isAdded, setIsAdded] = useState(false);
+
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  //Load cart from localStorage on page load
   useEffect(() => {
     const savedCart = localStorage.getItem("cart");
-    if(savedCart) {
+    if (savedCart) {
       setCart(JSON.parse(savedCart));
     }
-  })
+
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 0);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
 
   useEffect(() => {
     apiClient
@@ -30,6 +47,31 @@ export default function DetailsPage() {
         setLoading(false);
       });
   }, [slug]);
+
+  const handleAddToCart = () => {
+    if (service) {
+      setIsAdded(true);
+      const existingItem = cart.find((item) => item.service_id === service.id);
+
+      if (existingItem) {
+        alert("Service sudah tersedia di cart");
+        setIsAdded(false);
+      } else {
+        const newCartItem: CartItem = {
+          service_id: service.id,
+          slug: service.slug,
+          quantity: 1,
+        };
+        const updatedCart = [...cart, newCartItem];
+        setCart(updatedCart);
+
+        localStorage.setItem("cart", JSON.stringify(updatedCart));
+
+        alert("Service berhasil ditambahkan ke cart");
+        setIsAdded(false);
+      }
+    }
+  };
 
   if (loading) {
     return <p>Loading...</p>;
@@ -63,17 +105,25 @@ export default function DetailsPage() {
       </div>
       <section
         id="NavTop"
-        className="fixed left-0 right-0 top-[16px] z-30 transition-all duration-300"
+        className={`fixed left-0 right-0  z-30 transition-all duration-300 ${
+          isScrolled ? "top-[30px]" : "top-[16px]"
+        }`}
       >
         <div className="relative mx-auto max-w-[640px] px-5">
           <div
             id="ContainerNav"
-            className="flex items-center justify-between py-[14px] transition-all duration-300"
+            className={`flex items-center justify-between py-[14px] transition-all duration-300 ${
+              isScrolled
+                ? "bg-white rounded-[22px] px-[16px] shadow-[0px_12px_20px_0px_#0305041C]"
+                : ""
+            }`}
           >
-            <a href="category.html">
+            <Link to="/">
               <div
                 id="Back"
-                className="flex h-[44px] w-[44px] shrink-0 items-center justify-center rounded-full bg-white"
+                className={`flex h-[44px] w-[44px] shrink-0 items-center justify-center rounded-full bg-white ${
+                  isScrolled ? "border border-shujia-graylight" : ""
+                }`}
               >
                 <img
                   src="/assets/images/icons/back.svg"
@@ -81,17 +131,21 @@ export default function DetailsPage() {
                   className="h-[22px] w-[22px] shrink-0"
                 />
               </div>
-            </a>
+            </Link>
             <h2
               id="Title"
-              className="font-semibold text-white transition-all duration-300"
+              className={`font-semibold transition-all duration-300 ${
+                isScrolled ? "" : "text-white"
+              }`}
             >
               Details
             </h2>
-            <a href="#">
+            <Link to={"/cart"}>
               <div
                 id="Cart"
-                className="flex h-[44px] w-[44px] shrink-0 items-center justify-center rounded-full bg-white"
+                className={`flex h-[44px] w-[44px] shrink-0 items-center justify-center rounded-full bg-white ${
+                  isScrolled ? "border border-shujia-graylight" : ""
+                }`}
               >
                 <img
                   src="/assets/images/icons/cart.svg"
@@ -99,7 +153,7 @@ export default function DetailsPage() {
                   className="h-[22px] w-[22px] shrink-0"
                 />
               </div>
-            </a>
+            </Link>
           </div>
         </div>
       </section>
@@ -232,61 +286,63 @@ export default function DetailsPage() {
             slidesOffsetAfter={20}
             slidesOffsetBefore={20}
           >
-            {service.testimonials.length > 0 
-            ? service.testimonials.map((testimonial) => (
-            <SwiperSlide key={testimonial.id} className="swiper-slide !w-fit">
-              <a href="#" className="card">
-                <div className="flex w-[300px] flex-col gap-4 rounded-3xl border border-shujia-graylight p-5">
-                  <div className="stars flex items-center">
-                    <img
-                      src="/assets/images/icons/star-service-details.svg"
-                      alt="icon"
-                      className="h-[22px] w-[22px] shrink-0"
-                    />
-                    <img
-                      src="/assets/images/icons/star-service-details.svg"
-                      alt="icon"
-                      className="h-[22px] w-[22px] shrink-0"
-                    />
-                    <img
-                      src="/assets/images/icons/star-service-details.svg"
-                      alt="icon"
-                      className="h-[22px] w-[22px] shrink-0"
-                    />
-                    <img
-                      src="/assets/images/icons/star-service-details.svg"
-                      alt="icon"
-                      className="h-[22px] w-[22px] shrink-0"
-                    />
-                    <img
-                      src="/assets/images/icons/star-service-details.svg"
-                      alt="icon"
-                      className="h-[22px] w-[22px] shrink-0"
-                    />
-                  </div>
-                  <p className="leading-7">
-                    {testimonial.message}
-                  </p>
-                  <div className="profil flex items-center gap-3">
-                    <div className="flex h-[60px] w-[60px] items-center justify-center overflow-hidden rounded-full">
-                      <img
-                        src={`${BASE_URL}/${testimonial.photo}`}
-                        alt="image"
-                        className="h-full w-full object-cover"
-                      />
-                    </div>
-                    <div className="flex flex-col gap-[2px]">
-                      <h5 className="font-semibold">{testimonial.name}</h5>
-                      <p className="text-sm leading-[21px] text-shujia-gray">
-                        Programer
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </a>
-            </SwiperSlide>
-
-             ))
+            {service.testimonials.length > 0
+              ? service.testimonials.map((testimonial) => (
+                  <SwiperSlide
+                    key={testimonial.id}
+                    className="swiper-slide !w-fit"
+                  >
+                    <a href="#" className="card">
+                      <div className="flex w-[300px] flex-col gap-4 rounded-3xl border border-shujia-graylight p-5">
+                        <div className="stars flex items-center">
+                          <img
+                            src="/assets/images/icons/star-service-details.svg"
+                            alt="icon"
+                            className="h-[22px] w-[22px] shrink-0"
+                          />
+                          <img
+                            src="/assets/images/icons/star-service-details.svg"
+                            alt="icon"
+                            className="h-[22px] w-[22px] shrink-0"
+                          />
+                          <img
+                            src="/assets/images/icons/star-service-details.svg"
+                            alt="icon"
+                            className="h-[22px] w-[22px] shrink-0"
+                          />
+                          <img
+                            src="/assets/images/icons/star-service-details.svg"
+                            alt="icon"
+                            className="h-[22px] w-[22px] shrink-0"
+                          />
+                          <img
+                            src="/assets/images/icons/star-service-details.svg"
+                            alt="icon"
+                            className="h-[22px] w-[22px] shrink-0"
+                          />
+                        </div>
+                        <p className="leading-7">{testimonial.message}</p>
+                        <div className="profil flex items-center gap-3">
+                          <div className="flex h-[60px] w-[60px] items-center justify-center overflow-hidden rounded-full">
+                            <img
+                              src={`${BASE_URL}/${testimonial.photo}`}
+                              alt="image"
+                              className="h-full w-full object-cover"
+                            />
+                          </div>
+                          <div className="flex flex-col gap-[2px]">
+                            <h5 className="font-semibold">
+                              {testimonial.name}
+                            </h5>
+                            <p className="text-sm leading-[21px] text-shujia-gray">
+                              Programer
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </a>
+                  </SwiperSlide>
+                ))
               : "Belum ada data terbaru"}
           </Swiper>
         </div>
@@ -302,11 +358,15 @@ export default function DetailsPage() {
                 Refund Guarantee
               </p>
             </div>
-            <a href="my-cart.html" className="w-full">
+            <button
+              onClick={handleAddToCart}
+              disabled={isAdded}
+              className="w-full"
+            >
               <p className="w-full rounded-full bg-shujia-orange px-[18px] py-[14px] text-center font-semibold text-white transition-all duration-300 hover:shadow-[0px_4px_10px_0px_#D04B1E80]">
-                Add to Cart
+                {isAdded ? "Adding..." : "Add to Cart"}
               </p>
-            </a>
+            </button>
           </div>
         </div>
       </nav>

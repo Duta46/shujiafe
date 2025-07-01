@@ -2,6 +2,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { useEffect, useState } from "react";
 import { Category, HomeService } from "../types/type";
 import apiClient from "../services/apiServices";
+import { Link } from "react-router-dom";
 
 const fetchCategories = async () => {
   const response = await apiClient.get("/categories");
@@ -46,8 +47,7 @@ export default function HomePage() {
     fetchServicesData();
   }, []);
 
-  
-const BASE_URL = import.meta.env.VITE_REACT_API_STORAGE_URL;
+  const BASE_URL = import.meta.env.VITE_REACT_API_STORAGE_URL;
 
   return (
     <main className="relative mx-auto w-full max-w-[640px] overflow-hidden bg-white pb-[142px]">
@@ -116,7 +116,7 @@ const BASE_URL = import.meta.env.VITE_REACT_API_STORAGE_URL;
             {categories.length > 0
               ? categories.map((category) => (
                   <SwiperSlide className="swiper-slide !w-fit">
-                    <a href="category.html" className="card">
+                    <Link to={`/category/${category.slug}`} className="card">
                       <div className="shrink-0 space-y-3 rounded-[24px] border border-x-shujia-graylight bg-white py-4 text-center transition-all duration-300 hover:border-shujia-orange">
                         <div className="mx-auto flex h-[70px] w-[70px] shrink-0 items-center justify-center overflow-hidden rounded-full">
                           <img
@@ -132,11 +132,10 @@ const BASE_URL = import.meta.env.VITE_REACT_API_STORAGE_URL;
                           </p>
                         </div>
                       </div>
-                    </a>
+                    </Link>
                   </SwiperSlide>
                 ))
               : "Belum ada data terbaru"}
-
           </Swiper>
         </div>
       </section>
@@ -153,7 +152,6 @@ const BASE_URL = import.meta.env.VITE_REACT_API_STORAGE_URL;
           id="PopularSummerSlider"
           className="swiper w-full overflow-x-hidden"
         >
-            
           <Swiper
             className="swiper-wrapper pb-[30px]"
             direction="horizontal"
@@ -164,65 +162,65 @@ const BASE_URL = import.meta.env.VITE_REACT_API_STORAGE_URL;
           >
             {services.length > 0
               ? services.map((service) => (
-                 <SwiperSlide key={service.id} className="swiper-slide !w-fit">
-              <a href="service-details.html" className="card">
-                <div className="relative flex w-[230px] shrink-0 flex-col gap-[12px] overflow-hidden rounded-[24px] border border-shujia-graylight bg-white p-4 transition-all duration-300 hover:border-shujia-orange">
-                  <span className="absolute right-[26px] top-[26px] shrink-0 rounded-full bg-white px-2 py-[7px]">
-                    <div className="flex items-center gap-[2px]">
-                      <img src="assets/images/icons/star.svg" alt="icon" />
-                      <p className="text-xs font-semibold leading-[18px]">
-                        4.8
-                      </p>
-                    </div>
-                  </span>
-                  <div className="flex h-[140px] w-full shrink-0 items-center justify-center overflow-hidden rounded-[16px] bg-[#D9D9D9]">
-                    <img
-                      src={`${BASE_URL}/${service.thumbnail}`}
-                      alt="image"
-                      className="h-full w-full object-cover"
-                    />
-                  </div>
-                  <h3 className="line-clamp-2 min-h-[48px] font-semibold">
-                    {service.name}
-                  </h3>
-                  <div className="flex flex-col gap-y-3">
-                    <div className="flex items-center gap-2">
-                      <img
-                        src="assets/images/icons/date.svg"
-                        alt="icon"
-                        className="h-5 w-5 shrink-0"
-                      />
-                      <p className="text-sm leading-[21px] text-shujia-gray">
-                        {service.category.name}
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <img
-                        src="assets/images/icons/clock.svg"
-                        alt="icon"
-                        className="h-5 w-5 shrink-0"
-                      />
-                      <p className="text-sm leading-[21px] text-shujia-gray">
-                        {service.duration} Hours
-                      </p>
-                    </div>
-                    <strong className="font-semibold text-shujia-orange">
-                      Rp {service.price.toLocaleString("id-ID")}
-                    </strong>
-                    <img
-                      className="absolute bottom-0 right-0"
-                      src="assets/images/backgrounds/decoration.svg"
-                      alt="icon"
-                    />
-                  </div>
-                </div>
-              </a>
-            </SwiperSlide>
-                 ))
+                  <SwiperSlide key={service.id} className="swiper-slide !w-fit">
+                    <Link to={`/service/${service.slug}`} className="card">
+                      <div className="relative flex w-[230px] shrink-0 flex-col gap-[12px] overflow-hidden rounded-[24px] border border-shujia-graylight bg-white p-4 transition-all duration-300 hover:border-shujia-orange">
+                        <span className="absolute right-[26px] top-[26px] shrink-0 rounded-full bg-white px-2 py-[7px]">
+                          <div className="flex items-center gap-[2px]">
+                            <img
+                              src="assets/images/icons/star.svg"
+                              alt="icon"
+                            />
+                            <p className="text-xs font-semibold leading-[18px]">
+                              4.8
+                            </p>
+                          </div>
+                        </span>
+                        <div className="flex h-[140px] w-full shrink-0 items-center justify-center overflow-hidden rounded-[16px] bg-[#D9D9D9]">
+                          <img
+                            src={`${BASE_URL}/${service.thumbnail}`}
+                            alt="image"
+                            className="h-full w-full object-cover"
+                          />
+                        </div>
+                        <h3 className="line-clamp-2 min-h-[48px] font-semibold">
+                          {service.name}
+                        </h3>
+                        <div className="flex flex-col gap-y-3">
+                          <div className="flex items-center gap-2">
+                            <img
+                              src="assets/images/icons/date.svg"
+                              alt="icon"
+                              className="h-5 w-5 shrink-0"
+                            />
+                            <p className="text-sm leading-[21px] text-shujia-gray">
+                              {service.category.name}
+                            </p>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <img
+                              src="assets/images/icons/clock.svg"
+                              alt="icon"
+                              className="h-5 w-5 shrink-0"
+                            />
+                            <p className="text-sm leading-[21px] text-shujia-gray">
+                              {service.duration} Hours
+                            </p>
+                          </div>
+                          <strong className="font-semibold text-shujia-orange">
+                            Rp {service.price.toLocaleString("id-ID")}
+                          </strong>
+                          <img
+                            className="absolute bottom-0 right-0"
+                            src="assets/images/backgrounds/decoration.svg"
+                            alt="icon"
+                          />
+                        </div>
+                      </div>
+                    </Link>
+                  </SwiperSlide>
+                ))
               : "Belum ada data terbaru"}
-
-           
-            
           </Swiper>
         </div>
       </section>
